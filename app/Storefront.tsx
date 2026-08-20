@@ -69,7 +69,6 @@ export default function Storefront() {
       <section className="hero" id="top">
         <Image className="hero-watermark" src="/brand/ursewbro-logo.png" alt="" width={1184} height={1184} priority />
         <div className="hero-copy"><p className="eyebrow">CUSTOM • CREATIVE • ONE-OF-A-KIND</p><h1>YOU WEAR<br />CLOTHES.<br /><em>WE MAKE PIECES.</em></h1><p className="intro">Custom denim. Upcycled streetwear. One-of-one pieces built by UrSewBro.</p><div className="hero-buttons"><a className="button button-light" href="#drops">Shop the drop</a><a className="button button-outline" href="#custom">Start a custom piece</a></div></div>
-        <div className="hero-art" aria-hidden="true"><div className="denim-card"><Image src="/brand/custom-jeans-packages.png" alt="" fill sizes="(max-width: 800px) 80vw, 38vw" priority /></div><span className="edition">EST. 2026 / MADE BY HAND</span></div>
         <div className="hero-foot"><span>↓ SCROLL TO DISCOVER</span><span>SHOP IT. SEND IT. MAKE IT YOURS.</span></div>
       </section>
 
