@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { customPackages, faqs, products, type Product } from "../data/catalog";
 
 type CartItem = { id: string; name: string; price: number; meta: string; qty: number };
 
 export default function Storefront() {
+  const announcementRef = useRef<HTMLElement>(null);
+  const [announcementActive, setAnnouncementActive] = useState(true);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -15,6 +17,25 @@ export default function Storefront() {
   const [chat, setChat] = useState<string[]>(["Yo. I’m SewIT. Need help finding a piece or choosing a custom package?"]);
   const [before, setBefore] = useState(48);
   const subtotal = useMemo(() => cart.reduce((n, item) => n + item.price * item.qty, 0), [cart]);
+
+  useEffect(() => {
+    const announcement = announcementRef.current;
+    if (!announcement) return;
+
+    let isInView = true;
+    const syncAnimation = () => setAnnouncementActive(isInView && !document.hidden);
+    const observer = new IntersectionObserver(([entry]) => {
+      isInView = entry.isIntersecting;
+      syncAnimation();
+    });
+
+    observer.observe(announcement);
+    document.addEventListener("visibilitychange", syncAnimation);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", syncAnimation);
+    };
+  }, []);
 
   function addItem(item: CartItem) {
     setCart((current) => {
@@ -58,7 +79,16 @@ export default function Storefront() {
 
   return (
     <main>
-      <div className="announce"><span>ONE-OF-ONE PIECES. MADE DIFFERENT.</span><span>CUSTOM DENIM • UPCYCLED • HAND FINISHED</span><span>CUSTOM ORDERS AVAILABLE</span></div>
+      <aside className="announce" ref={announcementRef} aria-label="Store announcements">
+        <div className={`announce-track ${announcementActive ? "is-running" : ""}`}>
+          <div className="announce-group">
+            <span>ONE-OF-ONE PIECES. MADE DIFFERENT.</span><span>CUSTOM DENIM • UPCYCLED • HAND FINISHED</span><span>CUSTOM ORDERS AVAILABLE</span>
+          </div>
+          <div className="announce-group" aria-hidden="true">
+            <span>ONE-OF-ONE PIECES. MADE DIFFERENT.</span><span>CUSTOM DENIM • UPCYCLED • HAND FINISHED</span><span>CUSTOM ORDERS AVAILABLE</span>
+          </div>
+        </div>
+      </aside>
       <header className="site-header">
         <a className="brand" href="#top" aria-label="UrSewBro home"><Image src="/brand/ursewbro-logo.png" alt="UrSewBro" width={92} height={92} priority /></a>
         <nav aria-label="Primary navigation"><a href="#shop">Shop</a><a href="#custom">Custom</a><a href="#drops">New drops</a><a href="#one-of-one">One-of-ones</a><a href="#lookbook">Lookbook</a><a href="#sewcial">Sewcial club</a></nav>
