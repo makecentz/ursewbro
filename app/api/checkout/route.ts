@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { getDb } from "../../../db";
 import { orders } from "../../../db/schema";
 import { getStoreProduct } from "../../../lib/printify";
+import { getSupabaseServerClient } from "../../../lib/supabase-server";
 
 type RequestedItem = { id?: string; variantId?: string | number; qty?: number };
 type CheckoutItem = { productId: string; variantId: number; name: string; variantName: string; unitAmount: number; quantity: number };
@@ -29,13 +30,34 @@ export async function POST(request: Request) {
   const orderId = crypto.randomUUID();
   const now = new Date();
   const totalCents = validated.reduce((sum, item) => sum + item.unitAmount * item.quantity, 0);
+  const supabase = getSupabaseServerClient();
+  const accessToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  const authResult = supabase && accessToken ? await supabase.auth.getUser(accessToken) : null;
+  const customer = authResult?.data.user?.email ? authResult.data.user : null;
   const db = getDb();
   await db.insert(orders).values({ id:orderId, status:"AWAITING_PAYMENT", type:"SHOP", totalCents, itemsJson:JSON.stringify(validated), createdAt:now, updatedAt:now });
+
+  if (supabase && customer?.email) {
+    const { error: profileError } = await supabase.from("customer_profiles").upsert({
+      id: customer.id, email: customer.email.toLowerCase(), full_name: customer.user_metadata?.full_name || null, updated_at: now.toISOString(),
+    }, { onConflict: "id" });
+    const { error: orderError } = await supabase.from("orders").insert({
+      id: orderId, order_number: `VIV-${orderId.replaceAll("-", "").slice(0, 10).toUpperCase()}`, customer_id: customer.id,
+      customer_email: customer.email.toLowerCase(), status: "pending", subtotal_cents: totalCents, total_cents: totalCents,
+    });
+    const { error: itemsError } = orderError ? { error: null } : await supabase.from("order_items").insert(validated.map((item) => ({
+      order_id: orderId, printify_product_id: item.productId, printify_variant_id: String(item.variantId), product_name: item.name,
+      variant_name: item.variantName, quantity: item.quantity, unit_price_cents: item.unitAmount,
+    })));
+    if (profileError || orderError || itemsError) console.error("Supabase checkout mirror failed", profileError || orderError || itemsError);
+  }
 
   const params = new URLSearchParams();
   params.set("mode", "payment");
   params.set("client_reference_id", orderId);
   params.set("metadata[order_id]", orderId);
+  if (customer) params.set("metadata[customer_id]", customer.id);
+  if (customer?.email) params.set("customer_email", customer.email);
   params.set("customer_creation", "always");
   params.set("success_url", `${new URL(request.url).origin}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`);
   params.set("cancel_url", `${new URL(request.url).origin}/?checkout=cancelled`);
@@ -58,5 +80,6 @@ export async function POST(request: Request) {
     return Response.json({ error:session.error?.message || "Checkout could not start." }, { status:502 });
   }
   await db.update(orders).set({ stripeSessionId:session.id, updatedAt:new Date() }).where(eq(orders.id, orderId));
+  if (supabase && customer) await supabase.from("orders").update({ stripe_checkout_session_id: session.id, updated_at: new Date().toISOString() }).eq("id", orderId);
   return Response.json({ url:session.url });
 }

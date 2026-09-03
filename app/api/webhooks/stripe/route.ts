@@ -1,15 +1,17 @@
 import { env } from "cloudflare:workers";
 import { createPrintifyOrder, type FulfillmentItem, type ShippingAddress } from "../../../../lib/printify";
+import { getSupabaseServerClient } from "../../../../lib/supabase-server";
 
 type StripeAddress = { line1?: string; line2?: string; city?: string; state?: string; postal_code?: string; country?: string };
 type StripeSession = {
   id: string; client_reference_id?: string; payment_status?: string; payment_intent?: string; amount_total?: number;
   customer_details?: { email?: string; name?: string; phone?: string; address?: StripeAddress };
+  metadata?: { customer_id?: string; order_id?: string };
   shipping_details?: { name?: string; address?: StripeAddress };
   collected_information?: { shipping_details?: { name?: string; address?: StripeAddress } };
 };
 type StripeEvent = { id: string; type: string; data: { object: StripeSession } };
-type StoredItem = { productId: string; variantId: number; quantity: number };
+type StoredItem = { productId: string; variantId: number; name?: string; variantName?: string; unitAmount?: number; quantity: number };
 
 function hex(bytes: ArrayBuffer) {
   return [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
@@ -63,12 +65,37 @@ export async function POST(request: Request) {
   const claim = await runtime.DB.prepare("UPDATE orders SET status = ?, customer_email = ?, customer_name = ?, shipping_address_json = ?, stripe_payment_intent_id = ?, updated_at = ? WHERE id = ? AND printify_order_id IS NULL AND status IN (?, ?, ?)")
     .bind("FULFILLING", address.email.toLowerCase(), `${address.firstName} ${address.lastName}`, JSON.stringify(address), session.payment_intent || null, Date.now(), orderId, "AWAITING_PAYMENT", "CHECKOUT_ERROR", "FULFILLMENT_ERROR").run();
   if (!claim.meta.changes) return Response.json({ received:true, processing:true });
+  const supabase = getSupabaseServerClient();
+  const syncOrder = async (status: "paid" | "submitted" | "failed", printifyOrderId?: string) => {
+    if (!supabase) return;
+    const timestamp = new Date().toISOString();
+    const { error: orderError } = await supabase.from("orders").upsert({
+      id: orderId, order_number: `VIV-${orderId.replaceAll("-", "").slice(0, 10).toUpperCase()}`,
+      customer_id: session.metadata?.customer_id || null, customer_email: address.email.toLowerCase(), customer_name: `${address.firstName} ${address.lastName}`,
+      status, subtotal_cents: order.total_cents, total_cents: order.total_cents, stripe_checkout_session_id: session.id,
+      stripe_payment_intent_id: session.payment_intent || null, printify_order_id: printifyOrderId || null,
+      shipping_address: address, placed_at: timestamp, updated_at: timestamp,
+    }, { onConflict: "id" });
+    if (!orderError) {
+      const { count } = await supabase.from("order_items").select("id", { count: "exact", head: true }).eq("order_id", orderId);
+      if (!count) await supabase.from("order_items").insert(items.map((item) => ({
+        order_id: orderId, printify_product_id: item.productId, printify_variant_id: String(item.variantId),
+        product_name: item.name || "Vivlox item", variant_name: item.variantName || null,
+        quantity: item.quantity, unit_price_cents: item.unitAmount || 0,
+      })));
+    }
+    const { error: eventError } = await supabase.from("webhook_events").upsert({ event_id:event.id, provider:"stripe", event_type:event.type, processed_at:timestamp }, { onConflict:"event_id" });
+    if (orderError || eventError) console.error("Supabase webhook mirror failed", orderError || eventError);
+  };
+  await syncOrder("paid");
   try {
     const printify = await createPrintifyOrder(orderId, items as FulfillmentItem[], address);
     if (!printify?.id) throw new Error("Printify did not return an order id");
     await runtime.DB.prepare("UPDATE orders SET status = ?, printify_order_id = ?, updated_at = ? WHERE id = ?").bind("FULFILLMENT_SUBMITTED", printify.id, Date.now(), orderId).run();
+    await syncOrder("submitted", printify.id);
   } catch (error) {
     await runtime.DB.prepare("UPDATE orders SET status = ?, updated_at = ? WHERE id = ?").bind("FULFILLMENT_ERROR", Date.now(), orderId).run();
+    await syncOrder("failed");
     console.error("Printify fulfillment failed", error);
     return Response.json({ error:"Printify order creation failed" }, { status:502 });
   }

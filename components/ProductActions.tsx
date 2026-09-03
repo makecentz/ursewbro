@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { StoreProduct } from "../lib/printify";
+import { checkoutHeaders } from "../lib/supabase-browser";
 
 export default function ProductActions({ product }: { product: StoreProduct }) {
   const available = product.variants?.filter((variant) => variant.available) || [];
@@ -10,7 +11,7 @@ export default function ProductActions({ product }: { product: StoreProduct }) {
   const price = selected?.price || product.price;
 
   async function buyNow() {
-    const response = await fetch("/api/checkout", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ items: [{ id: product.id, variantId, name: product.name, price, meta: selected?.title || variantId, qty: 1 }] }) });
+    const response = await fetch("/api/checkout", { method: "POST", headers: await checkoutHeaders(), body: JSON.stringify({ items: [{ id: product.id, variantId, name: product.name, price, meta: selected?.title || variantId, qty: 1 }] }) });
     const result = await response.json() as { url?: string; error?: string };
     if (result.url) window.location.href = result.url;
     else alert(result.error || "Checkout is not available yet.");

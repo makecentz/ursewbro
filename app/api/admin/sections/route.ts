@@ -1,11 +1,10 @@
 import { env } from "cloudflare:workers";
-import { getChatGPTUser } from "../../../chatgpt-auth";
 import { defaultSiteContent, type SiteContent } from "../../../../lib/site-content";
+import { getAdminForRequest } from "../../../../lib/admin-auth";
 
 export async function POST(request: Request) {
-  const user = await getChatGPTUser();
   const runtime = env as unknown as { ADMIN_EMAIL?: string; DB?: D1Database };
-  if (!user || !runtime.ADMIN_EMAIL || user.email.toLowerCase() !== runtime.ADMIN_EMAIL.toLowerCase()) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!await getAdminForRequest(request)) return Response.json({ error: "Unauthorized" }, { status: 401 });
   if (!runtime.DB) return Response.json({ error: "Database unavailable" }, { status: 503 });
   const form = await request.formData();
   const sectionKey = String(form.get("sectionKey") || "") as keyof SiteContent;

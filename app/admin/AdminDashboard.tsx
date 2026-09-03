@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import type { StoreOrder } from "../../lib/printify";
 import type { SiteContent } from "../../lib/site-content";
 
-export default function AdminDashboard({ orders, productCount, printifyConnected, content }: { orders: StoreOrder[]; productCount: number; printifyConnected: boolean; content: SiteContent }) {
+export default function AdminDashboard({ orders, productCount, printifyConnected, content, accessToken }: { orders: StoreOrder[]; productCount: number; printifyConnected: boolean; content: SiteContent; accessToken: string }) {
   const [message, setMessage] = useState("");
   const customers = new Set(orders.map((order) => order.customerEmail).filter((email) => email !== "—")).size;
   const sales = orders.reduce((sum, order) => sum + order.total, 0);
@@ -12,7 +12,7 @@ export default function AdminDashboard({ orders, productCount, printifyConnected
   async function saveSection(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("Saving…");
-    const response = await fetch("/api/admin/sections", { method: "POST", body: new FormData(event.currentTarget) });
+    const response = await fetch("/api/admin/sections", { method: "POST", headers: { authorization: `Bearer ${accessToken}` }, body: new FormData(event.currentTarget) });
     setMessage(response.ok ? "Section saved. Refresh the storefront to see it." : "That section could not be saved.");
   }
 

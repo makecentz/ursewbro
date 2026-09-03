@@ -6,6 +6,7 @@ import { faqs, products as fallbackProducts } from "../data/catalog";
 import type { StoreProduct } from "../lib/printify";
 import type { SiteContent } from "../lib/site-content";
 import { SiteFooter } from "../components/SiteChrome";
+import { checkoutHeaders } from "../lib/supabase-browser";
 
 type CartItem = { id: string; variantId: string | number; name: string; price: number; meta: string; qty: number };
 
@@ -58,7 +59,7 @@ export default function Storefront({ initialProducts = fallbackProducts.map((pro
   }
 
   async function checkout() {
-    const response = await fetch("/api/checkout", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ items: cart }) });
+    const response = await fetch("/api/checkout", { method: "POST", headers: await checkoutHeaders(), body: JSON.stringify({ items: cart }) });
     const result = await response.json() as { url?: string; error?: string };
     if (result.url) window.location.href = result.url;
     else alert(result.error || "Checkout will be available as soon as Stripe is connected.");
@@ -93,7 +94,7 @@ export default function Storefront({ initialProducts = fallbackProducts.map((pro
       <header className="site-header">
         <a className="brand" href="#top" aria-label="Vivlox home"><Image src="/brand/vivlox-wordmark.png" alt="Vivlox — Define Your Essence" width={360} height={120} priority /></a>
         <nav aria-label="Primary navigation"><a href="#shop">Shop</a><a href="#drops">New drops</a><a href="#shop">Collections</a><a href="#sewcial">Community</a><a href="#newsletter">Drop alerts</a></nav>
-        <div className="header-actions"><button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">MENU</button><button aria-label="Search">⌕</button><button onClick={() => setCartOpen(true)} aria-label="Open shopping bag">Bag <b>{cart.reduce((n,x)=>n+x.qty,0)}</b></button></div>
+        <div className="header-actions"><a href="/account">Account</a><button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">MENU</button><button aria-label="Search">⌕</button><button onClick={() => setCartOpen(true)} aria-label="Open shopping bag">Bag <b>{cart.reduce((n,x)=>n+x.qty,0)}</b></button></div>
         {menuOpen && <div className="mobile-nav"><a href="#shop">SHOP</a><a href="#drops">NEW DROPS</a><a href="#shop">COLLECTIONS</a><a href="#sewcial">COMMUNITY</a></div>}
       </header>
 
