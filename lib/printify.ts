@@ -31,7 +31,7 @@ function config() {
 async function printifyFetch<T>(path: string, init: RequestInit = {}): Promise<T | null> {
   const { token } = config();
   if (!token) return null;
-  const response = await fetch(`${baseUrl}${path}`, { ...init, headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json;charset=utf-8", ...init.headers } });
+  const response = await fetch(`${baseUrl}${path}`, { ...init, headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json;charset=utf-8", "User-Agent":"Vivlox Website", ...init.headers } });
   if (!response.ok) throw new Error(`Printify request failed with ${response.status}`);
   return response.json() as Promise<T>;
 }
