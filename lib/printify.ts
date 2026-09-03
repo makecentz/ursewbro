@@ -39,6 +39,14 @@ function textOnly(value = "") {
   return value.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
 }
 
+function readyMadeCopy(value = "") {
+  return value
+    .replace(/one[- ]of[- ]a[- ]kind/gi, "limited edition")
+    .replace(/one[- ]of[- ]one(s)?/gi, (_, plural) => plural ? "limited releases" : "limited release")
+    .replace(/1\s*(?:of|[-/])\s*1/gi, "limited")
+    .replace(/custom[- ]made|custom work/gi, "ready-made");
+}
+
 function normalize(product: PrintifyProduct): StoreProduct {
   const variants = (product.variants || []).filter((variant) => variant.is_enabled !== false).map((variant) => ({
     id: variant.id,
@@ -50,14 +58,14 @@ function normalize(product: PrintifyProduct): StoreProduct {
   const minimumPrice = variants.filter((variant) => variant.available).reduce((lowest, variant) => lowest === 0 ? variant.price : Math.min(lowest, variant.price), 0);
   return {
     id: product.id,
-    name: product.title,
-    category: product.tags?.[0] || "Ready to wear",
+    name: readyMadeCopy(product.title),
+    category: readyMadeCopy(product.tags?.[0] || "Ready to wear"),
     price: minimumPrice,
     badge: "PRINTIFY",
     tone: "black",
     art: "V",
     sizes: variants.filter((variant) => variant.available).map((variant) => variant.title),
-    description: textOnly(product.description) || "A ready-to-wear Vivlox release.",
+    description: readyMadeCopy(textOnly(product.description)) || "A ready-to-wear Vivlox release.",
     image: images[0],
     images,
     variants,

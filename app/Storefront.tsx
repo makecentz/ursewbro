@@ -10,10 +10,10 @@ import { SiteFooter } from "../components/SiteChrome";
 type CartItem = { id: string; name: string; price: number; meta: string; qty: number };
 
 const fallbackContent: SiteContent = {
-  announcement: { title:"ONE-OF-ONE PIECES. MADE DIFFERENT.", subtitle:"READY TO WEAR • UPCYCLED • HAND FINISHED", body:"NEW DROPS AVAILABLE" },
-  hero: { title:"YOU WEAR CLOTHES. WE MAKE PIECES.", subtitle:"PRE-MADE • CREATIVE • ONE-OF-A-KIND", body:"Ready-to-wear denim, upcycled streetwear, and one-of-one pieces from Vivlox." },
-  about: { title:"NOT MASS PRODUCED. MADE DIFFERENT.", subtitle:"ABOUT VIVLOX", body:"Vivlox creates limited-run clothing and one-of-one pieces with bold silhouettes and hand-finished details." },
-  newsletter: { title:"DON’T MISS THE NEXT DROP.", subtitle:"DROP ALERTS", body:"One-of-one doesn’t restock." },
+  announcement: { title:"LIMITED RELEASES. MADE DIFFERENT.", subtitle:"READY TO WEAR • UPCYCLED • HAND FINISHED", body:"NEW DROPS AVAILABLE" },
+  hero: { title:"YOU WEAR CLOTHES. WE MAKE PIECES.", subtitle:"PRE-MADE • CREATIVE • READY TO WEAR", body:"Ready-to-wear denim, upcycled streetwear, and limited-run pieces from Vivlox." },
+  about: { title:"NOT MASS PRODUCED. MADE DIFFERENT.", subtitle:"ABOUT VIVLOX", body:"Vivlox creates limited-run clothing with bold silhouettes and hand-finished details." },
+  newsletter: { title:"DON’T MISS THE NEXT DROP.", subtitle:"DROP ALERTS", body:"Limited drops don’t always restock." },
 };
 
 export default function Storefront({ initialProducts = fallbackProducts.map((product)=>({ ...product, source:"demo" as const })), content = fallbackContent }: { initialProducts?: StoreProduct[]; content?: SiteContent }) {
@@ -71,8 +71,8 @@ export default function Storefront({ initialProducts = fallbackProducts.map((pro
     if (!input) return;
     const lower = input.toLowerCase();
     let answer = "Tell me the style, size, or piece you’re looking for and I’ll point you toward the right Vivlox drop.";
-    if (lower.includes("flare")) answer = "The After Hours Flare is a ready-to-wear one-of-one piece in size 34.";
-    if (lower.includes("size 34")) answer = "The Question Mark Denim is currently listed in 34, and the After Hours Flare is a one-of-one size 34.";
+    if (lower.includes("flare")) answer = "The After Hours Flare is a ready-to-wear limited-release piece in size 34.";
+    if (lower.includes("size 34")) answer = "The Question Mark Denim and After Hours Flare are currently listed in size 34.";
     if (lower.includes("shipping")) answer = "Ready-made orders ship after checkout. Tracking appears in your order dashboard as soon as the piece is on the way.";
     setChat((messages) => [...messages, `You: ${input}`, answer]);
     form.reset();
@@ -92,9 +92,9 @@ export default function Storefront({ initialProducts = fallbackProducts.map((pro
       </aside>
       <header className="site-header">
         <a className="brand" href="#top" aria-label="Vivlox home"><Image src="/brand/vivlox-wordmark.png" alt="Vivlox — Define Your Essence" width={360} height={120} priority /></a>
-        <nav aria-label="Primary navigation"><a href="#shop">Shop</a><a href="#drops">New drops</a><a href="#one-of-one">One-of-ones</a><a href="#sewcial">Community</a><a href="#newsletter">Drop alerts</a></nav>
+        <nav aria-label="Primary navigation"><a href="#shop">Shop</a><a href="#drops">New drops</a><a href="#shop">Collections</a><a href="#sewcial">Community</a><a href="#newsletter">Drop alerts</a></nav>
         <div className="header-actions"><button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">MENU</button><button aria-label="Search">⌕</button><button onClick={() => setCartOpen(true)} aria-label="Open shopping bag">Bag <b>{cart.reduce((n,x)=>n+x.qty,0)}</b></button></div>
-        {menuOpen && <div className="mobile-nav"><a href="#shop">SHOP</a><a href="#drops">NEW DROPS</a><a href="#one-of-one">ONE-OF-ONES</a><a href="#sewcial">COMMUNITY</a></div>}
+        {menuOpen && <div className="mobile-nav"><a href="#shop">SHOP</a><a href="#drops">NEW DROPS</a><a href="#shop">COLLECTIONS</a><a href="#sewcial">COMMUNITY</a></div>}
       </header>
 
       <section className="hero" id="top">
@@ -105,9 +105,9 @@ export default function Storefront({ initialProducts = fallbackProducts.map((pro
 
       <section className="section paper" id="drops"><div className="section-head"><div><p className="kicker">FRESH OUT THE SEWING ROOM</p><h2>NEW DROPS</h2></div><a href="#shop">SHOP ALL ↗</a></div><div className="product-grid">{products.map((product) => <article className={`product-card ${product.tone}`} key={product.id}><button className="heart" aria-label={`Save ${product.name}`}>♡</button>{product.badge && <span className="badge">{product.badge}</span>}<button className="product-art" onClick={() => setQuick(product)} aria-label={`Quick view ${product.name}`}>{product.image ? <Image src={product.image} alt={product.name} fill sizes="(max-width: 900px) 50vw, 25vw" unoptimized /> : <span>{product.art}</span>}</button><div className="product-meta"><div><p>{product.category}</p><h3><a href={`/products/${product.id}`}>{product.name}</a></h3></div><strong>${product.price}</strong></div><div className="product-quick"><a href={`/products/${product.id}`}>VIEW PRODUCT</a><button onClick={() => addItem({ id:product.id,name:product.name,price:product.price,meta:`Size ${product.sizes[0]}`,qty:1 })}>ADD TO BAG</button></div></article>)}</div></section>
 
-      <section className="one-section" id="one-of-one"><div className="one-copy"><p className="kicker acid">ONE OWNER. ONE TIME.</p><h2>THERE’S<br />ONLY ONE.</h2><p>One piece. One owner. Once it’s gone, it’s gone.</p><button className="button button-light" onClick={() => setQuick(products[1])}>SHOP ONE-OF-ONES</button></div><div className="one-art"><span className="giant-mark">✦</span><div className="one-label">AFTER HOURS FLARE<br /><b>1 / 1</b></div></div></section>
+      <section className="one-section" id="limited-release"><div className="one-copy"><p className="kicker acid">LIMITED DROP. WHILE STOCK LASTS.</p><h2>GET IT BEFORE<br />IT’S GONE.</h2><p>Small runs. Distinctive style. Ready to wear.</p><button className="button button-light" onClick={() => setQuick(products[1])}>SHOP LIMITED RELEASES</button></div><div className="one-art"><span className="giant-mark">✦</span><div className="one-label">AFTER HOURS FLARE<br /><b>LIMITED RUN</b></div></div></section>
 
-      <section className="before-after section"><div className="section-head inverse"><div><p className="kicker acid">THE VIVLOX EFFECT</p><h2>FROM REGULAR TO<br />ONE-OF-ONE.</h2></div></div><div className="comparison"><div className="compare-panel before"><span>EVERYDAY DENIM</span><div className="pants">II</div></div><div className="compare-panel after" style={{clipPath:`inset(0 0 0 ${before}%)`}}><span>VIVLOX ORIGINAL</span><div className="pants">??</div></div><input aria-label="Style comparison" type="range" min="5" max="95" value={before} onChange={(e)=>setBefore(Number(e.target.value))} /><div className="compare-line" style={{left:`${before}%`}}><b>↔</b></div></div></section>
+      <section className="before-after section"><div className="section-head inverse"><div><p className="kicker acid">THE VIVLOX EFFECT</p><h2>FROM REGULAR TO<br />VIVLOX.</h2></div></div><div className="comparison"><div className="compare-panel before"><span>EVERYDAY DENIM</span><div className="pants">II</div></div><div className="compare-panel after" style={{clipPath:`inset(0 0 0 ${before}%)`}}><span>VIVLOX ORIGINAL</span><div className="pants">??</div></div><input aria-label="Style comparison" type="range" min="5" max="95" value={before} onChange={(e)=>setBefore(Number(e.target.value))} /><div className="compare-line" style={{left:`${before}%`}}><b>↔</b></div></div></section>
 
       <section className="about-split"><div className="about-copy"><p className="kicker acid">{content.about.subtitle}</p><h2>{content.about.title}</h2><p>{content.about.body}</p><a className="text-link" href="#drops">SHOP THE LATEST DROP →</a></div><div className="studio-note"><span>LIMITED RUNS</span><b>WEAR<br />DIFFERENT.</b><span>MADE TO STAND OUT</span></div></section>
 
@@ -126,7 +126,7 @@ export default function Storefront({ initialProducts = fallbackProducts.map((pro
       <aside className={`cart-drawer ${cartOpen ? "open" : ""}`} aria-hidden={!cartOpen}><div className="cart-head"><h2>YOUR BAG / {cart.reduce((n,x)=>n+x.qty,0)}</h2><button onClick={()=>setCartOpen(false)}>×</button></div><div className="cart-items">{cart.length===0?<p>Your bag is waiting for something different.</p>:cart.map((item,index)=><div className="cart-item" key={`${item.id}-${index}`}><div className="cart-thumb">✂</div><div><h3>{item.name}</h3><p>{item.meta}</p><button onClick={()=>setCart(cart.filter((_,i)=>i!==index))}>REMOVE</button></div><strong>${item.price*item.qty}</strong></div>)}</div><div className="cart-foot"><div><span>SUBTOTAL</span><strong>${subtotal}</strong></div><p>Ready-made pieces ship while stock lasts.</p><button disabled={!cart.length} onClick={checkout}>SECURE CHECKOUT →</button></div></aside>{cartOpen && <button className="drawer-scrim" onClick={()=>setCartOpen(false)} aria-label="Close cart" />}
 
       <button className="sewit-pin" onClick={()=>setChatOpen(!chatOpen)} aria-label="Open SewIT chat"><span>• •</span></button>{!chatOpen && <div className="pin-bubble">Need help? Pin me.</div>}
-      {chatOpen && <section className="chat-panel"><header><div className="mini-pin">••</div><div><b>SEWIT</b><span>VIVLOX ASSISTANT</span></div><button onClick={()=>setChatOpen(false)}>×</button></header><div className="chat-messages">{chat.map((message,i)=><p className={message.startsWith("You:")?"user-message":"bot-message"} key={`${message}-${i}`}>{message}</p>)}</div><div className="chat-chips"><button onClick={()=>setChat([...chat,"The After Hours Flare is a ready-to-wear one-of-one piece in size 34."])}>FLARES?</button><button onClick={()=>setChat([...chat,"New ready-made pieces land in limited drops. Join drop alerts so you don’t miss the next release."])}>NEXT DROP?</button></div><form onSubmit={sendChat}><input name="message" aria-label="Message SewIT" placeholder="Ask SewIT…" /><button>↑</button></form></section>}
+      {chatOpen && <section className="chat-panel"><header><div className="mini-pin">••</div><div><b>SEWIT</b><span>VIVLOX ASSISTANT</span></div><button onClick={()=>setChatOpen(false)}>×</button></header><div className="chat-messages">{chat.map((message,i)=><p className={message.startsWith("You:")?"user-message":"bot-message"} key={`${message}-${i}`}>{message}</p>)}</div><div className="chat-chips"><button onClick={()=>setChat([...chat,"The After Hours Flare is a ready-to-wear limited-release piece in size 34."])}>FLARES?</button><button onClick={()=>setChat([...chat,"New ready-made pieces land in limited drops. Join drop alerts so you don’t miss the next release."])}>NEXT DROP?</button></div><form onSubmit={sendChat}><input name="message" aria-label="Message SewIT" placeholder="Ask SewIT…" /><button>↑</button></form></section>}
     </main>
   );
 }

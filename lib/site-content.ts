@@ -8,10 +8,10 @@ export type SiteContent = {
 };
 
 export const defaultSiteContent: SiteContent = {
-  announcement: { title: "ONE-OF-ONE PIECES. MADE DIFFERENT.", subtitle: "READY TO WEAR • UPCYCLED • HAND FINISHED", body: "NEW DROPS AVAILABLE" },
-  hero: { title: "YOU WEAR CLOTHES. WE MAKE PIECES.", subtitle: "PRE-MADE • CREATIVE • ONE-OF-A-KIND", body: "Ready-to-wear denim, upcycled streetwear, and one-of-one pieces from Vivlox." },
-  about: { title: "NOT MASS PRODUCED. MADE DIFFERENT.", subtitle: "ABOUT VIVLOX", body: "Vivlox creates limited-run clothing and one-of-one pieces with bold silhouettes, hand-finished details, and a point of view you won’t find on every rack." },
-  newsletter: { title: "DON’T MISS THE NEXT DROP.", subtitle: "DROP ALERTS", body: "One-of-one doesn’t restock." },
+  announcement: { title: "LIMITED RELEASES. MADE DIFFERENT.", subtitle: "READY TO WEAR • UPCYCLED • HAND FINISHED", body: "NEW DROPS AVAILABLE" },
+  hero: { title: "YOU WEAR CLOTHES. WE MAKE PIECES.", subtitle: "PRE-MADE • CREATIVE • READY TO WEAR", body: "Ready-to-wear denim, upcycled streetwear, and limited-run pieces from Vivlox." },
+  about: { title: "NOT MASS PRODUCED. MADE DIFFERENT.", subtitle: "ABOUT VIVLOX", body: "Vivlox creates limited-run clothing with bold silhouettes, hand-finished details, and a point of view you won’t find on every rack." },
+  newsletter: { title: "DON’T MISS THE NEXT DROP.", subtitle: "DROP ALERTS", body: "Limited drops don’t always restock." },
 };
 
 export async function getSiteContent(): Promise<SiteContent> {

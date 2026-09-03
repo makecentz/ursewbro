@@ -18,8 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host") || "ursewbro.com";
   const protocol = requestHeaders.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
-  const title = "Vivlox | Limited-Run & One-of-One Streetwear";
-  const description = "Shop ready-to-wear denim, upcycled clothing, limited drops, and one-of-one streetwear from Vivlox.";
+  const title = "Vivlox | Limited-Run Streetwear";
+  const description = "Shop ready-to-wear denim, upcycled clothing, and limited streetwear drops from Vivlox.";
   return {
     metadataBase: new URL(origin), title, description, applicationName: "Vivlox",
     icons: { icon: "/brand/hero-v-logo.png", shortcut: "/brand/hero-v-logo.png", apple: "/brand/hero-v-logo.png" },

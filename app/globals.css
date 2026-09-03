@@ -163,6 +163,8 @@ blockquote footer { margin-top:38px; color:#3e70b7; font-size:10px; letter-spaci
 .footer-bottom { grid-column:1/-1; margin-top:50px; padding-top:20px; display:flex; justify-content:space-between; border-top:1px solid #333; color:#666; font-size:9px; letter-spacing:.12em; }
 
 .page-header { top:0; }
+.header-on-light,main:has(> .product-page) .page-header { border-bottom-color:rgba(0,0,0,.2); }
+.header-on-light nav a,.header-on-light .header-actions a,main:has(> .product-page) .page-header nav a,main:has(> .product-page) .page-header .header-actions a { color:#080808; }
 .product-page { min-height:100vh; padding:150px 5vw 90px; display:grid; grid-template-columns:minmax(0,1.08fr) minmax(340px,.92fr); gap:7vw; align-items:center; background:var(--paper); color:#080808; }
 .product-gallery { position:relative; min-height:680px; display:grid; place-items:center; overflow:hidden; color:white; font:900 clamp(180px,28vw,430px)/1 Impact,sans-serif; }
 .product-gallery img,.product-art img { object-fit:cover; }

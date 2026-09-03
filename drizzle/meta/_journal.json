@@ -15,6 +15,13 @@
       "when": 1788442737130,
       "tag": "0001_shocking_meteorite",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788447000000,
+      "tag": "0002_ready_made_copy",
+      "breakpoints": true
     }
   ]
 }
