@@ -91,7 +91,7 @@ export default function Storefront({ initialProducts = fallbackProducts.map((pro
         </div>
       </aside>
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="Vivlox home"><Image src="/brand/hero-v-logo.png" alt="Vivlox" width={92} height={92} priority /></a>
+        <a className="brand" href="#top" aria-label="Vivlox home"><Image src="/brand/vivlox-wordmark.png" alt="Vivlox — Define Your Essence" width={360} height={120} priority /></a>
         <nav aria-label="Primary navigation"><a href="#shop">Shop</a><a href="#drops">New drops</a><a href="#one-of-one">One-of-ones</a><a href="#sewcial">Community</a><a href="#newsletter">Drop alerts</a></nav>
         <div className="header-actions"><button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">MENU</button><button aria-label="Search">⌕</button><button onClick={() => setCartOpen(true)} aria-label="Open shopping bag">Bag <b>{cart.reduce((n,x)=>n+x.qty,0)}</b></button></div>
         {menuOpen && <div className="mobile-nav"><a href="#shop">SHOP</a><a href="#drops">NEW DROPS</a><a href="#one-of-one">ONE-OF-ONES</a><a href="#sewcial">COMMUNITY</a></div>}

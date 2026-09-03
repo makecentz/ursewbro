@@ -12,8 +12,8 @@ button, a { color:inherit; } a { text-decoration:none; } button { font:inherit; 
 .announce-group span { white-space:nowrap; }
 .announce-group span::after { content:"✦"; margin-left:clamp(44px,7vw,120px); font-size:8px; }
 @keyframes announcement-marquee { to { transform:translateX(-50%); } }
-.site-header { position:absolute; z-index:20; top:30px; left:0; right:0; height:88px; padding:0 4vw; display:grid; grid-template-columns:100px 1fr 160px; align-items:center; border-bottom:1px solid rgba(255,255,255,.22); }
-.brand { width:72px; height:72px; display:grid; place-items:center; } .brand img { width:100%; height:100%; object-fit:contain; }
+.site-header { position:absolute; z-index:20; top:30px; left:0; right:0; height:88px; padding:0 4vw; display:grid; grid-template-columns:minmax(190px,250px) 1fr 160px; align-items:center; border-bottom:1px solid rgba(255,255,255,.22); }
+.brand { width:clamp(190px,17vw,250px); height:72px; display:flex; align-items:center; } .brand img { width:100%; height:100%; object-fit:contain; object-position:left center; }
 nav { display:flex; justify-content:center; gap:clamp(18px,2.3vw,38px); } nav a { font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
 .header-actions { display:flex; justify-content:flex-end; gap:16px; } .header-actions button { border:0; background:transparent; cursor:pointer; font-size:12px; text-transform:uppercase; }
 .header-actions b { display:inline-grid; place-items:center; width:18px; height:18px; margin-left:4px; border-radius:50%; background:var(--acid); color:#000; font-size:10px; }
@@ -27,7 +27,7 @@ h1 em { color:transparent; -webkit-text-stroke:2px var(--paper); font-style:norm
 .hero-buttons { display:flex; flex-wrap:wrap; gap:12px; } .button { min-height:50px; padding:0 24px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--paper); font-size:11px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; transition:.2s ease; }
 .button-light { background:var(--paper); color:#050505; } .button-outline:hover { background:var(--acid); border-color:var(--acid); color:#050505; }
 .hero-foot { position:absolute; left:5vw; right:5vw; bottom:18px; display:flex; justify-content:space-between; color:#878787; font-size:9px; font-weight:800; letter-spacing:.18em; }
-@media (max-width:900px) { .site-header{top:30px;height:76px;grid-template-columns:70px 1fr}.brand{width:58px;height:58px}nav{display:none}.header-actions{grid-column:2}.hero{min-height:940px;grid-template-columns:1fr;align-content:start;padding:142px 22px 70px}.hero-copy{z-index:4}h1{font-size:clamp(61px,18vw,94px)}.hero-watermark{width:150vw;right:-64vw;opacity:.2}.intro{max-width:330px}.hero-foot span:last-child{display:none} }
+@media (max-width:900px) { .site-header{top:30px;height:76px;grid-template-columns:minmax(140px,170px) 1fr}.brand{width:clamp(140px,38vw,170px);height:58px}nav{display:none}.header-actions{grid-column:2}.hero{min-height:940px;grid-template-columns:1fr;align-content:start;padding:142px 22px 70px}.hero-copy{z-index:4}h1{font-size:clamp(61px,18vw,94px)}.hero-watermark{width:150vw;right:-64vw;opacity:.2}.intro{max-width:330px}.hero-foot span:last-child{display:none} }
 @media (prefers-reduced-motion:reduce) { html{scroll-behavior:auto} *{transition:none!important}.announce-track{animation:none;transform:none}.announce{overflow-x:auto} }
 
 .section { padding:110px 5vw; }
@@ -156,7 +156,7 @@ blockquote footer { margin-top:38px; color:#3e70b7; font-size:10px; letter-spaci
 .newsletter input { flex:1; min-width:0; padding:20px 0; border:0; outline:0; background:transparent; color:white; font-weight:900; }
 .newsletter button { border:0; background:transparent; color:var(--acid); font-size:10px; font-weight:900; cursor:pointer; }
 .footer { padding:80px 5vw 25px; display:grid; grid-template-columns:1.6fr repeat(4,1fr); gap:32px; border-top:1px dashed #555; }
-.footer-brand img { object-fit:contain; }
+.footer-brand img { width:min(100%,430px); height:auto; object-fit:contain; object-position:left center; }
 .footer-brand p { color:#888; font-size:10px; font-weight:900; letter-spacing:.15em; }
 .footer h3 { margin-bottom:24px; color:var(--acid); font-size:10px; letter-spacing:.18em; }
 .footer a { display:block; margin:13px 0; color:#aaa; font-size:12px; }
