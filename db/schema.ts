@@ -19,7 +19,10 @@ export const newsletterSubscribers = sqliteTable("newsletter_subscribers", {
 
 export const orders = sqliteTable("orders", {
   id: text("id").primaryKey(), customerEmail: text("customer_email"), status: text("status").notNull().default("AWAITING_PAYMENT"),
-  type: text("type").notNull(), totalCents: integer("total_cents").notNull(), stripeSessionId: text("stripe_session_id"), createdAt: integer("created_at", { mode: "timestamp" }).notNull(), updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  customerName: text("customer_name"), type: text("type").notNull(), totalCents: integer("total_cents").notNull(),
+  itemsJson: text("items_json"), shippingAddressJson: text("shipping_address_json"), stripeSessionId: text("stripe_session_id"),
+  stripePaymentIntentId: text("stripe_payment_intent_id"), printifyOrderId: text("printify_order_id"), trackingUrl: text("tracking_url"),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(), updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
 
 export const siteSections = sqliteTable("site_sections", {

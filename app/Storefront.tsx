@@ -7,7 +7,7 @@ import type { StoreProduct } from "../lib/printify";
 import type { SiteContent } from "../lib/site-content";
 import { SiteFooter } from "../components/SiteChrome";
 
-type CartItem = { id: string; name: string; price: number; meta: string; qty: number };
+type CartItem = { id: string; variantId: string | number; name: string; price: number; meta: string; qty: number };
 
 const fallbackContent: SiteContent = {
   announcement: { title:"LIMITED RELEASES. MADE DIFFERENT.", subtitle:"READY TO WEAR • UPCYCLED • HAND FINISHED", body:"NEW DROPS AVAILABLE" },
@@ -50,7 +50,7 @@ export default function Storefront({ initialProducts = fallbackProducts.map((pro
 
   function addItem(item: CartItem) {
     setCart((current) => {
-      const found = current.find((x) => x.id === item.id && x.meta === item.meta);
+      const found = current.find((x) => x.id === item.id && x.variantId === item.variantId);
       return found ? current.map((x) => x === found ? { ...x, qty: x.qty + 1 } : x) : [...current, item];
     });
     setQuick(null);
@@ -103,7 +103,7 @@ export default function Storefront({ initialProducts = fallbackProducts.map((pro
         <div className="hero-foot"><span>↓ SCROLL TO DISCOVER</span><span>SHOP IT. WEAR IT. MAKE IT YOURS.</span></div>
       </section>
 
-      <section className="section paper" id="drops"><div className="section-head"><div><p className="kicker">FRESH OUT THE SEWING ROOM</p><h2>NEW DROPS</h2></div><a href="#shop">SHOP ALL ↗</a></div><div className="product-grid">{products.map((product) => <article className={`product-card ${product.tone}`} key={product.id}><button className="heart" aria-label={`Save ${product.name}`}>♡</button>{product.badge && <span className="badge">{product.badge}</span>}<button className="product-art" onClick={() => setQuick(product)} aria-label={`Quick view ${product.name}`}>{product.image ? <Image src={product.image} alt={product.name} fill sizes="(max-width: 900px) 50vw, 25vw" unoptimized /> : <span>{product.art}</span>}</button><div className="product-meta"><div><p>{product.category}</p><h3><a href={`/products/${product.id}`}>{product.name}</a></h3></div><strong>${product.price}</strong></div><div className="product-quick"><a href={`/products/${product.id}`}>VIEW PRODUCT</a><button onClick={() => addItem({ id:product.id,name:product.name,price:product.price,meta:`Size ${product.sizes[0]}`,qty:1 })}>ADD TO BAG</button></div></article>)}</div></section>
+      <section className="section paper" id="drops"><div className="section-head"><div><p className="kicker">FRESH OUT THE SEWING ROOM</p><h2>NEW DROPS</h2></div><a href="#shop">SHOP ALL ↗</a></div><div className="product-grid">{products.map((product) => <article className={`product-card ${product.tone}`} key={product.id}><button className="heart" aria-label={`Save ${product.name}`}>♡</button>{product.badge && <span className="badge">{product.badge}</span>}<button className="product-art" onClick={() => setQuick(product)} aria-label={`Quick view ${product.name}`}>{product.image ? <Image src={product.image} alt={product.name} fill sizes="(max-width: 900px) 50vw, 25vw" unoptimized /> : <span>{product.art}</span>}</button><div className="product-meta"><div><p>{product.category}</p><h3><a href={`/products/${product.id}`}>{product.name}</a></h3></div><strong>${product.price}</strong></div><div className="product-quick"><a href={`/products/${product.id}`}>VIEW PRODUCT</a><button onClick={() => addItem({ id:product.id,variantId:product.variants?.[0]?.id || product.sizes[0],name:product.name,price:product.price,meta:product.variants?.[0]?.title || `Size ${product.sizes[0]}`,qty:1 })}>ADD TO BAG</button></div></article>)}</div></section>
 
       <section className="one-section" id="limited-release"><div className="one-copy"><p className="kicker acid">LIMITED DROP. WHILE STOCK LASTS.</p><h2>GET IT BEFORE<br />IT’S GONE.</h2><p>Small runs. Distinctive style. Ready to wear.</p><button className="button button-light" onClick={() => setQuick(products[1])}>SHOP LIMITED RELEASES</button></div><div className="one-art"><span className="giant-mark">✦</span><div className="one-label">AFTER HOURS FLARE<br /><b>LIMITED RUN</b></div></div></section>
 
@@ -121,7 +121,7 @@ export default function Storefront({ initialProducts = fallbackProducts.map((pro
 
       <SiteFooter />
 
-      {quick && <div className="modal-backdrop" onClick={()=>setQuick(null)}><section className="quick-modal" onClick={(e)=>e.stopPropagation()}><button className="close" onClick={()=>setQuick(null)}>×</button><div className={`quick-art ${quick.tone}`}>{quick.art}</div><div><p className="kicker">{quick.category}</p><h2>{quick.name}</h2><strong className="quick-price">${quick.price}</strong><p>{quick.description}</p><label>SIZE<select id="quick-size">{quick.sizes.map(size=><option key={size}>{size}</option>)}</select></label><button className="button dark-button" onClick={()=>addItem({id:quick.id,name:quick.name,price:quick.price,meta:`Size ${quick.sizes[0]}`,qty:1})}>ADD TO BAG →</button></div></section></div>}
+      {quick && <div className="modal-backdrop" onClick={()=>setQuick(null)}><section className="quick-modal" onClick={(e)=>e.stopPropagation()}><button className="close" onClick={()=>setQuick(null)}>×</button><div className={`quick-art ${quick.tone}`}>{quick.art}</div><div><p className="kicker">{quick.category}</p><h2>{quick.name}</h2><strong className="quick-price">${quick.price}</strong><p>{quick.description}</p><label>SIZE<select id="quick-size">{quick.sizes.map(size=><option key={size}>{size}</option>)}</select></label><button className="button dark-button" onClick={()=>addItem({id:quick.id,variantId:quick.variants?.[0]?.id || quick.sizes[0],name:quick.name,price:quick.price,meta:quick.variants?.[0]?.title || `Size ${quick.sizes[0]}`,qty:1})}>ADD TO BAG →</button></div></section></div>}
 
       <aside className={`cart-drawer ${cartOpen ? "open" : ""}`} aria-hidden={!cartOpen}><div className="cart-head"><h2>YOUR BAG / {cart.reduce((n,x)=>n+x.qty,0)}</h2><button onClick={()=>setCartOpen(false)}>×</button></div><div className="cart-items">{cart.length===0?<p>Your bag is waiting for something different.</p>:cart.map((item,index)=><div className="cart-item" key={`${item.id}-${index}`}><div className="cart-thumb">✂</div><div><h3>{item.name}</h3><p>{item.meta}</p><button onClick={()=>setCart(cart.filter((_,i)=>i!==index))}>REMOVE</button></div><strong>${item.price*item.qty}</strong></div>)}</div><div className="cart-foot"><div><span>SUBTOTAL</span><strong>${subtotal}</strong></div><p>Ready-made pieces ship while stock lasts.</p><button disabled={!cart.length} onClick={checkout}>SECURE CHECKOUT →</button></div></aside>{cartOpen && <button className="drawer-scrim" onClick={()=>setCartOpen(false)} aria-label="Close cart" />}
 

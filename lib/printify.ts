@@ -14,6 +14,9 @@ type PrintifyOrder = {
   address_to?: { first_name?: string; last_name?: string; email?: string };
 };
 
+export type FulfillmentItem = { productId: string; variantId: number; quantity: number };
+export type ShippingAddress = { firstName: string; lastName: string; email: string; phone?: string; country: string; region?: string; address1: string; address2?: string; city: string; zip: string };
+
 export type StoreVariant = { id: number | string; title: string; price: number; available: boolean };
 export type StoreProduct = Product & { image?: string; images?: string[]; variants?: StoreVariant[]; source: "printify" | "demo" };
 export type StoreOrder = { id: string; status: string; total: number; createdAt: string; customerName: string; customerEmail: string };
@@ -25,12 +28,10 @@ function config() {
   return { token: runtime.PRINTIFY_API_TOKEN, shopId: runtime.PRINTIFY_SHOP_ID };
 }
 
-async function printifyFetch<T>(path: string): Promise<T | null> {
+async function printifyFetch<T>(path: string, init: RequestInit = {}): Promise<T | null> {
   const { token } = config();
   if (!token) return null;
-  const response = await fetch(`${baseUrl}${path}`, {
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json;charset=utf-8" },
-  });
+  const response = await fetch(`${baseUrl}${path}`, { ...init, headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json;charset=utf-8", ...init.headers } });
   if (!response.ok) throw new Error(`Printify request failed with ${response.status}`);
   return response.json() as Promise<T>;
 }
@@ -120,6 +121,21 @@ export async function getPrintifyOrders(): Promise<StoreOrder[]> {
     console.error("Printify orders unavailable", error);
     return [];
   }
+}
+
+export async function createPrintifyOrder(externalId: string, items: FulfillmentItem[], address: ShippingAddress) {
+  const { shopId } = config();
+  if (!shopId) throw new Error("Printify shop is not configured");
+  return printifyFetch<PrintifyOrder>(`/shops/${shopId}/orders.json`, {
+    method: "POST",
+    body: JSON.stringify({
+      external_id: externalId,
+      line_items: items.map((item, index) => ({ product_id:item.productId, variant_id:item.variantId, quantity:item.quantity, external_id:`${externalId}-${index + 1}` })),
+      shipping_method: 1,
+      send_shipping_notification: true,
+      address_to: { first_name:address.firstName, last_name:address.lastName, email:address.email, phone:address.phone || "", country:address.country, region:address.region || "", address1:address.address1, address2:address.address2 || "", city:address.city, zip:address.zip },
+    }),
+  });
 }
 
 export function isPrintifyConfigured() {
