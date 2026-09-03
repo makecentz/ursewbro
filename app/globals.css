@@ -156,7 +156,7 @@ blockquote footer { margin-top:38px; color:#3e70b7; font-size:10px; letter-spaci
 .newsletter input { flex:1; min-width:0; padding:20px 0; border:0; outline:0; background:transparent; color:white; font-weight:900; }
 .newsletter button { border:0; background:transparent; color:var(--acid); font-size:10px; font-weight:900; cursor:pointer; }
 .footer { padding:80px 5vw 25px; display:grid; grid-template-columns:1.6fr repeat(4,1fr); gap:32px; border-top:1px dashed #555; }
-.footer-brand img { width:min(100%,430px); height:auto; object-fit:contain; object-position:left center; }
+.footer-brand img { width:min(100%,215px); height:auto; object-fit:contain; object-position:left center; }
 .footer-brand p { color:#888; font-size:10px; font-weight:900; letter-spacing:.15em; }
 .footer h3 { margin-bottom:24px; color:var(--acid); font-size:10px; letter-spacing:.18em; }
 .footer a { display:block; margin:13px 0; color:#aaa; font-size:12px; }
