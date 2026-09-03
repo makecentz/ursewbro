@@ -22,6 +22,7 @@ nav { display:flex; justify-content:center; gap:clamp(18px,2.3vw,38px); } nav a 
 .hero-watermark { position:absolute; z-index:-1; width:min(78vw,980px); height:auto; right:-17vw; top:50%; transform:translateY(-50%); opacity:.18; }
 .hero-copy { position:relative; z-index:3; max-width:750px; } .eyebrow { margin:0 0 22px; color:var(--acid); font-size:11px; font-weight:900; letter-spacing:.22em; }
 h1 { margin:0; font-family:Impact,Haettenschweiler,"Arial Narrow Bold",sans-serif; font-size:clamp(64px,8.1vw,142px); font-weight:900; line-height:.79; letter-spacing:-.045em; text-transform:uppercase; }
+.hero-copy h1 { -webkit-text-stroke:1px #000; paint-order:stroke fill; }
 h1 em { color:transparent; -webkit-text-stroke:2px var(--paper); font-style:normal; }
 .intro { max-width:520px; margin:32px 0 28px; color:#c8c6c1; font-size:clamp(15px,1.25vw,19px); line-height:1.55; }
 .hero-buttons { display:flex; flex-wrap:wrap; gap:12px; } .button { min-height:50px; padding:0 24px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--paper); font-size:11px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; transition:.2s ease; }
