@@ -1,2 +1,9 @@
 import type { MetadataRoute } from "next";
-export default function sitemap(): MetadataRoute.Sitemap { return [{ url:"https://ursewbro.com", changeFrequency:"weekly", priority:1 },{ url:"https://ursewbro.com/track", changeFrequency:"monthly", priority:.4 }]; }
+export default function sitemap(): MetadataRoute.Sitemap {
+  const origin = "https://ursewbro.ecomexperts.chatgpt.site";
+  return [
+    { url:origin, changeFrequency:"weekly", priority:1 },
+    { url:`${origin}/privacy`, changeFrequency:"yearly", priority:.3 },
+    { url:`${origin}/terms`, changeFrequency:"yearly", priority:.3 },
+  ];
+}

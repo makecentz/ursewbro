@@ -2,17 +2,28 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { faqs, products, type Product } from "../data/catalog";
+import { faqs, products as fallbackProducts } from "../data/catalog";
+import type { StoreProduct } from "../lib/printify";
+import type { SiteContent } from "../lib/site-content";
+import { SiteFooter } from "../components/SiteChrome";
 
 type CartItem = { id: string; name: string; price: number; meta: string; qty: number };
 
-export default function Storefront() {
+const fallbackContent: SiteContent = {
+  announcement: { title:"ONE-OF-ONE PIECES. MADE DIFFERENT.", subtitle:"READY TO WEAR • UPCYCLED • HAND FINISHED", body:"NEW DROPS AVAILABLE" },
+  hero: { title:"YOU WEAR CLOTHES. WE MAKE PIECES.", subtitle:"PRE-MADE • CREATIVE • ONE-OF-A-KIND", body:"Ready-to-wear denim, upcycled streetwear, and one-of-one pieces from Vivlox." },
+  about: { title:"NOT MASS PRODUCED. MADE DIFFERENT.", subtitle:"ABOUT VIVLOX", body:"Vivlox creates limited-run clothing and one-of-one pieces with bold silhouettes and hand-finished details." },
+  newsletter: { title:"DON’T MISS THE NEXT DROP.", subtitle:"DROP ALERTS", body:"One-of-one doesn’t restock." },
+};
+
+export default function Storefront({ initialProducts = fallbackProducts.map((product)=>({ ...product, source:"demo" as const })), content = fallbackContent }: { initialProducts?: StoreProduct[]; content?: SiteContent }) {
+  const products = initialProducts;
   const announcementRef = useRef<HTMLElement>(null);
   const [announcementActive, setAnnouncementActive] = useState(true);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [quick, setQuick] = useState<Product | null>(null);
+  const [quick, setQuick] = useState<StoreProduct | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [chat, setChat] = useState<string[]>(["Welcome to Vivlox. Need help finding a drop, size, or ready-to-wear piece?"]);
   const [before, setBefore] = useState(48);
@@ -72,10 +83,10 @@ export default function Storefront() {
       <aside className="announce" ref={announcementRef} aria-label="Store announcements">
         <div className={`announce-track ${announcementActive ? "is-running" : ""}`}>
           <div className="announce-group">
-            <span>ONE-OF-ONE PIECES. MADE DIFFERENT.</span><span>READY TO WEAR • UPCYCLED • HAND FINISHED</span><span>NEW DROPS AVAILABLE</span>
+            <span>{content.announcement.title}</span><span>{content.announcement.subtitle}</span><span>{content.announcement.body}</span>
           </div>
           <div className="announce-group" aria-hidden="true">
-            <span>ONE-OF-ONE PIECES. MADE DIFFERENT.</span><span>READY TO WEAR • UPCYCLED • HAND FINISHED</span><span>NEW DROPS AVAILABLE</span>
+            <span>{content.announcement.title}</span><span>{content.announcement.subtitle}</span><span>{content.announcement.body}</span>
           </div>
         </div>
       </aside>
@@ -88,17 +99,17 @@ export default function Storefront() {
 
       <section className="hero" id="top">
         <Image className="hero-watermark" src="/brand/hero-v-logo.png" alt="" width={1280} height={1280} priority />
-        <div className="hero-copy"><p className="eyebrow">PRE-MADE • CREATIVE • ONE-OF-A-KIND</p><h1>YOU WEAR<br />CLOTHES.<br /><em>WE MAKE PIECES.</em></h1><p className="intro">Ready-to-wear denim, upcycled streetwear, and one-of-one pieces from Vivlox.</p><div className="hero-buttons"><a className="button button-light" href="#drops">Shop the drop</a><a className="button button-outline" href="#shop">Shop all pieces</a></div></div>
+        <div className="hero-copy"><p className="eyebrow">{content.hero.subtitle}</p><h1>{content.hero.title}</h1><p className="intro">{content.hero.body}</p><div className="hero-buttons"><a className="button button-light" href="#drops">Shop the drop</a><a className="button button-outline" href="#shop">Shop all pieces</a></div></div>
         <div className="hero-foot"><span>↓ SCROLL TO DISCOVER</span><span>SHOP IT. WEAR IT. MAKE IT YOURS.</span></div>
       </section>
 
-      <section className="section paper" id="drops"><div className="section-head"><div><p className="kicker">FRESH OUT THE SEWING ROOM</p><h2>NEW DROPS</h2></div><a href="#shop">SHOP ALL ↗</a></div><div className="product-grid">{products.map((product) => <article className={`product-card ${product.tone}`} key={product.id}><button className="heart" aria-label={`Save ${product.name}`}>♡</button>{product.badge && <span className="badge">{product.badge}</span>}<button className="product-art" onClick={() => setQuick(product)} aria-label={`Quick view ${product.name}`}><span>{product.art}</span></button><div className="product-meta"><div><p>{product.category}</p><h3>{product.name}</h3></div><strong>${product.price}</strong></div><div className="product-quick"><button onClick={() => setQuick(product)}>QUICK VIEW</button><button onClick={() => addItem({ id:product.id,name:product.name,price:product.price,meta:`Size ${product.sizes[0]}`,qty:1 })}>ADD TO BAG</button></div></article>)}</div></section>
+      <section className="section paper" id="drops"><div className="section-head"><div><p className="kicker">FRESH OUT THE SEWING ROOM</p><h2>NEW DROPS</h2></div><a href="#shop">SHOP ALL ↗</a></div><div className="product-grid">{products.map((product) => <article className={`product-card ${product.tone}`} key={product.id}><button className="heart" aria-label={`Save ${product.name}`}>♡</button>{product.badge && <span className="badge">{product.badge}</span>}<button className="product-art" onClick={() => setQuick(product)} aria-label={`Quick view ${product.name}`}>{product.image ? <Image src={product.image} alt={product.name} fill sizes="(max-width: 900px) 50vw, 25vw" unoptimized /> : <span>{product.art}</span>}</button><div className="product-meta"><div><p>{product.category}</p><h3><a href={`/products/${product.id}`}>{product.name}</a></h3></div><strong>${product.price}</strong></div><div className="product-quick"><a href={`/products/${product.id}`}>VIEW PRODUCT</a><button onClick={() => addItem({ id:product.id,name:product.name,price:product.price,meta:`Size ${product.sizes[0]}`,qty:1 })}>ADD TO BAG</button></div></article>)}</div></section>
 
       <section className="one-section" id="one-of-one"><div className="one-copy"><p className="kicker acid">ONE OWNER. ONE TIME.</p><h2>THERE’S<br />ONLY ONE.</h2><p>One piece. One owner. Once it’s gone, it’s gone.</p><button className="button button-light" onClick={() => setQuick(products[1])}>SHOP ONE-OF-ONES</button></div><div className="one-art"><span className="giant-mark">✦</span><div className="one-label">AFTER HOURS FLARE<br /><b>1 / 1</b></div></div></section>
 
       <section className="before-after section"><div className="section-head inverse"><div><p className="kicker acid">THE VIVLOX EFFECT</p><h2>FROM REGULAR TO<br />ONE-OF-ONE.</h2></div></div><div className="comparison"><div className="compare-panel before"><span>EVERYDAY DENIM</span><div className="pants">II</div></div><div className="compare-panel after" style={{clipPath:`inset(0 0 0 ${before}%)`}}><span>VIVLOX ORIGINAL</span><div className="pants">??</div></div><input aria-label="Style comparison" type="range" min="5" max="95" value={before} onChange={(e)=>setBefore(Number(e.target.value))} /><div className="compare-line" style={{left:`${before}%`}}><b>↔</b></div></div></section>
 
-      <section className="about-split"><div className="about-copy"><p className="kicker acid">ABOUT VIVLOX</p><h2>NOT MASS<br />PRODUCED.<br /><em>MADE DIFFERENT.</em></h2><p>Vivlox creates limited-run clothing and one-of-one pieces with bold silhouettes, hand-finished details, and a point of view you won’t find on every rack.</p><a className="text-link" href="#drops">SHOP THE LATEST DROP →</a></div><div className="studio-note"><span>LIMITED RUNS</span><b>WEAR<br />DIFFERENT.</b><span>MADE TO STAND OUT</span></div></section>
+      <section className="about-split"><div className="about-copy"><p className="kicker acid">{content.about.subtitle}</p><h2>{content.about.title}</h2><p>{content.about.body}</p><a className="text-link" href="#drops">SHOP THE LATEST DROP →</a></div><div className="studio-note"><span>LIMITED RUNS</span><b>WEAR<br />DIFFERENT.</b><span>MADE TO STAND OUT</span></div></section>
 
       <section className="sewcial section" id="sewcial"><div className="sewcial-art"><Image src="/brand/hero-v-logo.png" alt="Vivlox community emblem" fill sizes="(max-width: 800px) 100vw, 42vw" /></div><div className="sewcial-copy"><p className="kicker acid">A COMMUNITY BUILT ON STYLE, CREATIVITY & SELF-EXPRESSION</p><h2>WELCOME TO<br />THE VIVLOX<br /><em>COMMUNITY.</em></h2><p>Fresh drops, styling inspiration, and a front-row look at what’s coming next.</p><ul><li>Discover new releases</li><li>Style limited pieces</li><li>Connect with other creatives</li><li>Get early drop alerts</li></ul><div className="hero-buttons"><a className="button button-light" href="#newsletter">Join the community</a><a className="button button-outline" href="#drops">Shop new drops</a></div></div></section>
 
@@ -106,9 +117,9 @@ export default function Storefront() {
 
       <section className="reviews section paper"><p className="kicker">WORD ON THE STREET</p><div className="review-grid"><blockquote>“The fit is perfect and the details make it feel unlike anything else in my closet.”<footer>★★★★★ — MARCUS / ATLANTA</footer></blockquote><blockquote>“Vivlox made the whole look feel effortless. The piece gets noticed every time I wear it.”<footer>★★★★★ — NIA / BALTIMORE</footer></blockquote></div></section>
 
-      <section className="newsletter" id="newsletter"><div><p className="kicker acid">DROP ALERTS</p><h2>DON’T MISS<br />THE NEXT DROP.</h2><p>One-of-one doesn’t restock.</p></div><form action="/api/newsletter" method="post"><label className="sr-only" htmlFor="newsletter-email">Email address</label><input id="newsletter-email" name="email" type="email" required placeholder="YOUR EMAIL ADDRESS" /><button type="submit">KEEP ME POSTED →</button></form></section>
+      <section className="newsletter" id="newsletter"><div><p className="kicker acid">{content.newsletter.subtitle}</p><h2>{content.newsletter.title}</h2><p>{content.newsletter.body}</p></div><form action="/api/newsletter" method="post"><label className="sr-only" htmlFor="newsletter-email">Email address</label><input id="newsletter-email" name="email" type="email" required placeholder="YOUR EMAIL ADDRESS" /><button type="submit">KEEP ME POSTED →</button></form></section>
 
-      <footer className="footer"><div className="footer-brand"><Image src="/brand/hero-v-logo.png" alt="Vivlox" width={170} height={170} /><p>PRE-MADE. CREATIVE.<br />ONE-OF-A-KIND.</p></div>{[["SHOP","New Drops","One-of-Ones","Denim","All Products"],["HELP","FAQ","Shipping","Returns","Track Order"],["VIVLOX","About","Community","Drop Alerts","Instagram"],["LEGAL","Privacy","Terms","Accessibility"]].map(([title,...links])=><div key={title}><h3>{title}</h3>{links.map(x=><a href="#" key={x}>{x}</a>)}</div>)}<div className="footer-bottom">© 2026 VIVLOX. ALL RIGHTS RESERVED. <span>BUILT WITH THREAD. WORN WITH ATTITUDE.</span></div></footer>
+      <SiteFooter />
 
       {quick && <div className="modal-backdrop" onClick={()=>setQuick(null)}><section className="quick-modal" onClick={(e)=>e.stopPropagation()}><button className="close" onClick={()=>setQuick(null)}>×</button><div className={`quick-art ${quick.tone}`}>{quick.art}</div><div><p className="kicker">{quick.category}</p><h2>{quick.name}</h2><strong className="quick-price">${quick.price}</strong><p>{quick.description}</p><label>SIZE<select id="quick-size">{quick.sizes.map(size=><option key={size}>{size}</option>)}</select></label><button className="button dark-button" onClick={()=>addItem({id:quick.id,name:quick.name,price:quick.price,meta:`Size ${quick.sizes[0]}`,qty:1})}>ADD TO BAG →</button></div></section></div>}
 

@@ -21,3 +21,11 @@ export const orders = sqliteTable("orders", {
   id: text("id").primaryKey(), customerEmail: text("customer_email"), status: text("status").notNull().default("AWAITING_PAYMENT"),
   type: text("type").notNull(), totalCents: integer("total_cents").notNull(), stripeSessionId: text("stripe_session_id"), createdAt: integer("created_at", { mode: "timestamp" }).notNull(), updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
+
+export const siteSections = sqliteTable("site_sections", {
+  sectionKey: text("section_key").primaryKey(),
+  title: text("title").notNull(),
+  subtitle: text("subtitle").notNull(),
+  body: text("body").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+});
