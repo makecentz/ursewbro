@@ -18,6 +18,6 @@ export async function POST(request: Request) {
   const session = await stripeResponse.json() as { id?: string; url?: string; error?: { message?: string } };
   if (!stripeResponse.ok || !session.id || !session.url) return Response.json({ error: session.error?.message || "Checkout could not start." }, { status: 502 });
   const now = new Date();
-  await getDb().insert(orders).values({ id: crypto.randomUUID(), status: "AWAITING_PAYMENT", type: items.some(x=>x.id.startsWith("package-")) ? "CUSTOM" : "SHOP", totalCents: items.reduce((n,x)=>n+Math.round(x.price*100)*x.qty,0), stripeSessionId: session.id, createdAt: now, updatedAt: now });
+  await getDb().insert(orders).values({ id: crypto.randomUUID(), status: "AWAITING_PAYMENT", type: "SHOP", totalCents: items.reduce((n,x)=>n+Math.round(x.price*100)*x.qty,0), stripeSessionId: session.id, createdAt: now, updatedAt: now });
   return Response.json({ url: session.url });
 }

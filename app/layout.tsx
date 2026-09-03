@@ -18,13 +18,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host") || "ursewbro.com";
   const protocol = requestHeaders.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
-  const title = "UrSewBro | Custom Denim & One-of-One Streetwear";
-  const description = "Shop custom denim, upcycled clothing and one-of-one streetwear from UrSewBro. Send in your jeans or commission something completely custom.";
+  const title = "Vivlox | Limited-Run & One-of-One Streetwear";
+  const description = "Shop ready-to-wear denim, upcycled clothing, limited drops, and one-of-one streetwear from Vivlox.";
   return {
-    metadataBase: new URL(origin), title, description, applicationName: "UrSewBro",
-    icons: { icon: "/brand/ursewbro-logo.png", shortcut: "/brand/ursewbro-logo.png", apple: "/brand/ursewbro-logo.png" },
-    openGraph: { title, description, type: "website", siteName: "UrSewBro", url: origin, images: [{ url: `${origin}/og.png`, width: 1536, height: 864, alt: "UrSewBro — You wear clothes. We make pieces." }] },
-    twitter: { card: "summary_large_image", title, description, images: [`${origin}/og.png`] },
+    metadataBase: new URL(origin), title, description, applicationName: "Vivlox",
+    icons: { icon: "/brand/hero-v-logo.png", shortcut: "/brand/hero-v-logo.png", apple: "/brand/hero-v-logo.png" },
+    openGraph: { title, description, type: "website", siteName: "Vivlox", url: origin },
+    twitter: { card: "summary", title, description },
     other: { "theme-color": "#050505" },
   };
 }
