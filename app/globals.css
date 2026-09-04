@@ -195,6 +195,7 @@ blockquote footer { margin-top:38px; color:#3e70b7; font-size:10px; letter-spaci
 .quick-modal h2 { margin:0; font:900 56px/.9 Impact,sans-serif; text-transform:uppercase; }
 .quick-modal p { line-height:1.6; }
 .quick-art { position:relative; display:grid; place-items:center; overflow:hidden; color:#fff; font:900 170px/1 Impact,sans-serif; }
+.quick-art img { object-fit:contain; background:#fff; }
 .quick-price { display:block; margin:20px 0; font-size:24px; }
 .quick-modal .button { width:100%; margin-top:25px; }
 .close { position:absolute; z-index:3; right:12px; top:10px; width:38px; height:38px; border:0; background:#000; color:white; font-size:27px; cursor:pointer; }
