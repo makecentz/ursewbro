@@ -62,7 +62,7 @@ function normalize(product: PrintifyProduct): StoreProduct {
     name: readyMadeCopy(product.title),
     category: readyMadeCopy(product.tags?.[0] || "Ready to wear"),
     price: minimumPrice,
-    badge: "PRINTIFY",
+    badge: "FEATURED",
     tone: "black",
     art: "V",
     sizes: variants.filter((variant) => variant.available).map((variant) => variant.title),
