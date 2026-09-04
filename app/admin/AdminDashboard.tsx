@@ -12,7 +12,8 @@ export default function AdminDashboard({ orders, productCount, printifyConnected
   async function saveSection(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("Saving…");
-    const response = await fetch("/api/admin/sections", { method: "POST", headers: { authorization: `Bearer ${accessToken}` }, body: new FormData(event.currentTarget) });
+    const fields = Object.fromEntries(new FormData(event.currentTarget));
+    const response = await fetch("/api/admin/sections", { method: "POST", headers: { authorization: `Bearer ${accessToken}`, "content-type": "application/json" }, body: JSON.stringify(fields) });
     setMessage(response.ok ? "Section saved. Refresh the storefront to see it." : "That section could not be saved.");
   }
 

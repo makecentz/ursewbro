@@ -17,8 +17,9 @@ const fallbackContent: SiteContent = {
   newsletter: { title:"DON’T MISS THE NEXT DROP.", subtitle:"DROP ALERTS", body:"Limited drops don’t always restock." },
 };
 
-export default function Storefront({ initialProducts, content = fallbackContent }: { initialProducts?: StoreProduct[]; content?: SiteContent }) {
+export default function Storefront({ initialProducts, content: initialContent }: { initialProducts?: StoreProduct[]; content?: SiteContent }) {
   const [products, setProducts] = useState<StoreProduct[]>(initialProducts?.length ? initialProducts : fallbackProducts.map((product)=>({ ...product, source:"demo" as const })));
+  const [content, setContent] = useState<SiteContent>(initialContent || fallbackContent);
   const announcementRef = useRef<HTMLElement>(null);
   const [announcementActive, setAnnouncementActive] = useState(true);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -61,6 +62,19 @@ export default function Storefront({ initialProducts, content = fallbackContent 
       })
       .catch(() => undefined);
   }, [initialProducts]);
+
+  useEffect(() => {
+    if (initialContent) return;
+    fetch("/api/content")
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Site content unavailable");
+        return response.json() as Promise<{ content?: SiteContent }>;
+      })
+      .then((result) => {
+        if (result.content) setContent(result.content);
+      })
+      .catch(() => undefined);
+  }, [initialContent]);
 
   function addItem(item: CartItem) {
     setCart((current) => {
@@ -106,28 +120,28 @@ export default function Storefront({ initialProducts, content = fallbackContent 
       </aside>
       <header className="site-header">
         <a className="brand" href="#top" aria-label="Vivlox home"><Image src="/brand/vivlox-wordmark.png" alt="Vivlox — Define Your Essence" width={360} height={120} priority /></a>
-        <nav aria-label="Primary navigation"><a href="#shop">Shop</a><a href="#drops">New drops</a><a href="#shop">Collections</a><a href="#sewcial">Community</a><a href="#newsletter">Drop alerts</a></nav>
+        <nav aria-label="Primary navigation"><a href="/collections">Shop</a><a href="#drops">New drops</a><a href="/collections">Collections</a><a href="#sewcial">Community</a><a href="#newsletter">Drop alerts</a></nav>
         <div className="header-actions"><a href="/account">Account</a><button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">MENU</button><button aria-label="Search">⌕</button><button onClick={() => setCartOpen(true)} aria-label="Open shopping bag">Bag <b>{cart.reduce((n,x)=>n+x.qty,0)}</b></button></div>
-        {menuOpen && <div className="mobile-nav"><a href="#shop">SHOP</a><a href="#drops">NEW DROPS</a><a href="#shop">COLLECTIONS</a><a href="#sewcial">COMMUNITY</a></div>}
+        {menuOpen && <div className="mobile-nav"><a href="/collections">SHOP</a><a href="#drops">NEW DROPS</a><a href="/collections">COLLECTIONS</a><a href="#sewcial">COMMUNITY</a></div>}
       </header>
 
       <section className="hero" id="top">
         <Image className="hero-watermark" src="/brand/hero-v-logo.png" alt="" width={1280} height={1280} priority />
-        <div className="hero-copy"><p className="eyebrow">{content.hero.subtitle}</p><h1>{content.hero.title}</h1><p className="intro">{content.hero.body}</p><div className="hero-buttons"><a className="button button-light" href="#drops">Shop the drop</a><a className="button button-outline" href="#shop">Shop all pieces</a></div></div>
+        <div className="hero-copy"><p className="eyebrow">{content.hero.subtitle}</p><h1>{content.hero.title}</h1><p className="intro">{content.hero.body}</p><div className="hero-buttons"><a className="button button-light" href="#drops">Shop the drop</a><a className="button button-outline" href="/collections">Shop all pieces</a></div></div>
         <div className="hero-foot"><span>↓ SCROLL TO DISCOVER</span><span>SHOP IT. WEAR IT. MAKE IT YOURS.</span></div>
       </section>
 
-      <section className="section paper" id="drops"><div className="section-head"><div><p className="kicker">FRESH OUT THE SEWING ROOM</p><h2>NEW DROPS</h2></div><a href="#shop">SHOP ALL ↗</a></div><div className="product-grid">{products.map((product) => <article className={`product-card ${product.tone}`} key={product.id}><button className="heart" aria-label={`Save ${product.name}`}>♡</button>{product.badge && <span className="badge">{product.badge}</span>}<a className="product-art" href={`/products/${product.id}`} aria-label={`View ${product.name}`}>{product.image ? <Image src={product.image} alt={product.name} fill sizes="(max-width: 900px) 50vw, 25vw" unoptimized /> : <span>{product.art}</span>}</a><div className="product-meta"><div><p>{product.category}</p><h3><a href={`/products/${product.id}`}>{product.name}</a></h3></div><strong>${product.price}</strong></div><div className="product-quick"><a href={`/products/${product.id}`}>VIEW PRODUCT</a><button onClick={() => addItem({ id:product.id,variantId:product.variants?.[0]?.id || product.sizes[0],name:product.name,price:product.price,meta:product.variants?.[0]?.title || `Size ${product.sizes[0]}`,qty:1 })}>ADD TO BAG</button></div></article>)}</div></section>
+      <section className="section paper" id="drops"><div className="section-head"><div><p className="kicker">FRESH OUT THE SEWING ROOM</p><h2>NEW DROPS</h2></div><a href="/collections">SHOP ALL ↗</a></div><div className="product-grid">{products.map((product) => <article className={`product-card ${product.tone}`} key={product.id}><button className="heart" aria-label={`Save ${product.name}`}>♡</button>{product.badge && <span className="badge">{product.badge}</span>}<a className="product-art" href={`/products/${product.id}`} aria-label={`View ${product.name}`}>{product.image ? <Image src={product.image} alt={product.name} fill sizes="(max-width: 900px) 50vw, 25vw" unoptimized /> : <span>{product.art}</span>}</a><div className="product-meta"><div><p>{product.category}</p><h3><a href={`/products/${product.id}`}>{product.name}</a></h3></div><strong>${product.price}</strong></div><div className="product-quick"><a href={`/products/${product.id}`}>VIEW PRODUCT</a><button onClick={() => addItem({ id:product.id,variantId:product.variants?.[0]?.id || product.sizes[0],name:product.name,price:product.price,meta:product.variants?.[0]?.title || `Size ${product.sizes[0]}`,qty:1 })}>ADD TO BAG</button></div></article>)}</div></section>
 
       <section className="one-section" id="limited-release"><div className="one-copy"><p className="kicker acid">LIMITED DROP. WHILE STOCK LASTS.</p><h2>GET IT BEFORE<br />IT’S GONE.</h2><p>Small runs. Distinctive style. Ready to wear.</p><button className="button button-light" onClick={() => setQuick(products[1])}>SHOP LIMITED RELEASES</button></div><div className="one-art"><span className="giant-mark">✦</span><div className="one-label">AFTER HOURS FLARE<br /><b>LIMITED RUN</b></div></div></section>
 
       <section className="before-after section"><div className="section-head inverse"><div><p className="kicker acid">THE VIVLOX EFFECT</p><h2>FROM REGULAR TO<br />VIVLOX.</h2></div></div><div className="comparison"><div className="compare-panel before"><span>EVERYDAY DENIM</span><div className="pants">II</div></div><div className="compare-panel after" style={{clipPath:`inset(0 0 0 ${before}%)`}}><span>VIVLOX ORIGINAL</span><div className="pants">??</div></div><input aria-label="Style comparison" type="range" min="5" max="95" value={before} onChange={(e)=>setBefore(Number(e.target.value))} /><div className="compare-line" style={{left:`${before}%`}}><b>↔</b></div></div></section>
 
-      <section className="about-split"><div className="about-copy"><p className="kicker acid">{content.about.subtitle}</p><h2>{content.about.title}</h2><p>{content.about.body}</p><a className="text-link" href="#drops">SHOP THE LATEST DROP →</a></div><div className="studio-note"><span>LIMITED RUNS</span><b>WEAR<br />DIFFERENT.</b><span>MADE TO STAND OUT</span></div></section>
+      <section className="about-split" id="about"><div className="about-copy"><p className="kicker acid">{content.about.subtitle}</p><h2>{content.about.title}</h2><p>{content.about.body}</p><a className="text-link" href="#drops">SHOP THE LATEST DROP →</a></div><div className="studio-note"><span>LIMITED RUNS</span><b>WEAR<br />DIFFERENT.</b><span>MADE TO STAND OUT</span></div></section>
 
       <section className="sewcial section" id="sewcial"><div className="sewcial-art"><Image src="/brand/hero-v-logo.png" alt="Vivlox community emblem" fill sizes="(max-width: 800px) 100vw, 42vw" /></div><div className="sewcial-copy"><p className="kicker acid">A COMMUNITY BUILT ON STYLE, CREATIVITY & SELF-EXPRESSION</p><h2>WELCOME TO<br />THE VIVLOX<br /><em>COMMUNITY.</em></h2><p>Fresh drops, styling inspiration, and a front-row look at what’s coming next.</p><ul><li>Discover new releases</li><li>Style limited pieces</li><li>Connect with other creatives</li><li>Get early drop alerts</li></ul><div className="hero-buttons"><a className="button button-light" href="#newsletter">Join the community</a><a className="button button-outline" href="#drops">Shop new drops</a></div></div></section>
 
-      <section className="faq section"><div className="section-head inverse"><div><p className="kicker acid">NEED TO KNOW</p><h2>FAQ / THE DETAILS</h2></div></div><div className="faq-list">{faqs.map(([q,a],i)=><details key={q} open={i===0}><summary>{q}<span>+</span></summary><p>{a}</p></details>)}</div></section>
+      <section className="faq section" id="faq"><div className="section-head inverse"><div><p className="kicker acid">NEED TO KNOW</p><h2>FAQ / THE DETAILS</h2></div></div><div className="faq-list">{faqs.map(([q,a],i)=><details key={q} open={i===0}><summary>{q}<span>+</span></summary><p>{a}</p></details>)}</div></section>
 
       <section className="reviews section paper"><p className="kicker">WORD ON THE STREET</p><div className="review-grid"><blockquote>“The fit is perfect and the details make it feel unlike anything else in my closet.”<footer>★★★★★ — MARCUS / ATLANTA</footer></blockquote><blockquote>“Vivlox made the whole look feel effortless. The piece gets noticed every time I wear it.”<footer>★★★★★ — NIA / BALTIMORE</footer></blockquote></div></section>
 
