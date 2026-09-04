@@ -17,8 +17,8 @@ const fallbackContent: SiteContent = {
   newsletter: { title:"DON’T MISS THE NEXT DROP.", subtitle:"DROP ALERTS", body:"Limited drops don’t always restock." },
 };
 
-export default function Storefront({ initialProducts = fallbackProducts.map((product)=>({ ...product, source:"demo" as const })), content = fallbackContent }: { initialProducts?: StoreProduct[]; content?: SiteContent }) {
-  const products = initialProducts;
+export default function Storefront({ initialProducts, content = fallbackContent }: { initialProducts?: StoreProduct[]; content?: SiteContent }) {
+  const [products, setProducts] = useState<StoreProduct[]>(initialProducts?.length ? initialProducts : fallbackProducts.map((product)=>({ ...product, source:"demo" as const })));
   const announcementRef = useRef<HTMLElement>(null);
   const [announcementActive, setAnnouncementActive] = useState(true);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -48,6 +48,19 @@ export default function Storefront({ initialProducts = fallbackProducts.map((pro
       document.removeEventListener("visibilitychange", syncAnimation);
     };
   }, []);
+
+  useEffect(() => {
+    if (initialProducts?.length) return;
+    fetch("/api/products")
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Product feed unavailable");
+        return response.json() as Promise<{ products?: StoreProduct[] }>;
+      })
+      .then((result) => {
+        if (result.products?.length) setProducts(result.products);
+      })
+      .catch(() => undefined);
+  }, [initialProducts]);
 
   function addItem(item: CartItem) {
     setCart((current) => {
