@@ -10,6 +10,10 @@ import { checkoutHeaders } from "../lib/supabase-browser";
 
 type CartItem = { id: string; variantId: string | number; name: string; price: number; meta: string; qty: number };
 
+function SupportIcon() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13v-2a8 8 0 0 1 16 0v2" /><path d="M4 12H2v5h4v-5H4Zm16 0h2v5h-4v-5h2Z" /><path d="M18 17c0 2-2 3-4 3h-2" /><circle cx="11" cy="20" r="1" /></svg>;
+}
+
 const fallbackContent: SiteContent = {
   announcement: { title:"LIMITED RELEASES. MADE DIFFERENT.", subtitle:"READY TO WEAR • UPCYCLED • HAND FINISHED", body:"NEW DROPS AVAILABLE" },
   hero: { title:"YOU WEAR CLOTHES. WE MAKE PIECES.", subtitle:"PRE-MADE • CREATIVE • READY TO WEAR", body:"Ready-to-wear denim, upcycled streetwear, and limited-run pieces from Vivlox." },
@@ -153,8 +157,8 @@ export default function Storefront({ initialProducts, content: initialContent }:
 
       <aside className={`cart-drawer ${cartOpen ? "open" : ""}`} aria-hidden={!cartOpen}><div className="cart-head"><h2>YOUR BAG / {cart.reduce((n,x)=>n+x.qty,0)}</h2><button onClick={()=>setCartOpen(false)}>×</button></div><div className="cart-items">{cart.length===0?<p>Your bag is waiting for something different.</p>:cart.map((item,index)=><div className="cart-item" key={`${item.id}-${index}`}><div className="cart-thumb">✂</div><div><h3>{item.name}</h3><p>{item.meta}</p><button onClick={()=>setCart(cart.filter((_,i)=>i!==index))}>REMOVE</button></div><strong>${item.price*item.qty}</strong></div>)}</div><div className="cart-foot"><div><span>SUBTOTAL</span><strong>${subtotal}</strong></div><p>Ready-made pieces ship while stock lasts.</p><button disabled={!cart.length} onClick={checkout}>SECURE CHECKOUT →</button></div></aside>{cartOpen && <button className="drawer-scrim" onClick={()=>setCartOpen(false)} aria-label="Close cart" />}
 
-      <button className="sewit-pin" onClick={()=>setChatOpen(!chatOpen)} aria-label="Open SewIT chat"><span>• •</span></button>{!chatOpen && <div className="pin-bubble">Need help? Pin me.</div>}
-      {chatOpen && <section className="chat-panel"><header><div className="mini-pin">••</div><div><b>SEWIT</b><span>VIVLOX ASSISTANT</span></div><button onClick={()=>setChatOpen(false)}>×</button></header><div className="chat-messages">{chat.map((message,i)=><p className={message.startsWith("You:")?"user-message":"bot-message"} key={`${message}-${i}`}>{message}</p>)}</div><div className="chat-chips"><button onClick={()=>setChat([...chat,"The After Hours Flare is a ready-to-wear limited-release piece in size 34."])}>FLARES?</button><button onClick={()=>setChat([...chat,"New ready-made pieces land in limited drops. Join drop alerts so you don’t miss the next release."])}>NEXT DROP?</button></div><form onSubmit={sendChat}><input name="message" aria-label="Message SewIT" placeholder="Ask SewIT…" /><button>↑</button></form></section>}
+      <button className="sewit-pin" onClick={()=>setChatOpen(!chatOpen)} aria-label="Open customer support chat"><SupportIcon /></button>{!chatOpen && <div className="pin-bubble">Need help? Chat with us.</div>}
+      {chatOpen && <section className="chat-panel"><header><div className="mini-pin"><SupportIcon /></div><div><b>SEWIT</b><span>VIVLOX ASSISTANT</span></div><button onClick={()=>setChatOpen(false)}>×</button></header><div className="chat-messages">{chat.map((message,i)=><p className={message.startsWith("You:")?"user-message":"bot-message"} key={`${message}-${i}`}>{message}</p>)}</div><div className="chat-chips"><button onClick={()=>setChat([...chat,"The After Hours Flare is a ready-to-wear limited-release piece in size 34."])}>FLARES?</button><button onClick={()=>setChat([...chat,"New ready-made pieces land in limited drops. Join drop alerts so you don’t miss the next release."])}>NEXT DROP?</button></div><form onSubmit={sendChat}><input name="message" aria-label="Message SewIT" placeholder="Ask SewIT…" /><button>↑</button></form></section>}
     </main>
   );
 }
