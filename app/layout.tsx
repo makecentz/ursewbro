@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
-  const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host") || "ursewbro.com";
+  const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host") || "vivlox.store";
   const protocol = requestHeaders.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
   const title = "Vivlox | Limited-Run Streetwear";
