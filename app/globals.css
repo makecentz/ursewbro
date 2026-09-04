@@ -175,6 +175,7 @@ blockquote footer { margin-top:38px; color:#3e70b7; font-size:10px; letter-spaci
 .product-detail>strong { display:block; font:900 30px/1 Arial,sans-serif; }
 .product-detail>p { max-width:620px; margin:28px 0; color:#555; font:16px/1.7 Arial,sans-serif; }
 .product-detail>ul { margin:28px 0 0; padding:22px 0 0; border-top:1px solid #bbb; display:grid; gap:10px; list-style:none; color:#555; font:11px Arial,sans-serif; }
+.product-loading{min-height:70vh;padding:190px 5vw 100px;background:var(--paper);color:#080808}.product-loading h1{margin:12px 0 24px;font:900 clamp(58px,9vw,140px)/.86 Impact,sans-serif}.product-loading p:not(.kicker){margin-bottom:28px;color:#555}
 .product-actions { display:grid; gap:16px; margin-top:30px; }
 .product-actions label { display:grid; gap:9px; font-size:9px; font-weight:900; letter-spacing:.15em; }
 .product-actions select { width:100%; padding:16px; border:1px solid #999; background:white; color:#000; }
